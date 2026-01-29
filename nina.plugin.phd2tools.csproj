@@ -1,36 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFrameworks>net10.0-windows;net10.0</TargetFrameworks>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <UseWPF>true</UseWPF>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWPF Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">true</UseWPF>
+    <ImportWindowsDesktopTargets Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">true</ImportWindowsDesktopTargets>
+    <EnableWindowsTargeting Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">true</EnableWindowsTargeting>
     <AssemblyTitle>Phd2 Tools</AssemblyTitle>
     <Title>Phd2 Tools</Title>
     <Authors>Stefan Berg @isbeorn</Authors>
     <Product>Phd2 Tools</Product>
     <Description>Additional capabilities for controlling the PHD2 Guiding Software via N.I.N.A.</Description>
     <Copyright>Copyright ©  2024-2025</Copyright>
+    <DefaultItemExcludes Condition="$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">$(DefaultItemExcludes);**/*.xaml.cs;**/*.xaml</DefaultItemExcludes>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
     <PackageReference Include="NINA.Plugin" Version="3.0.0.2001-beta" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.Settings</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
     <None Update="Properties\Settings.Settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup Condition="$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
+    <ProjectReference Include="..\..\NINA.Plugin\NINA.Plugin.csproj" />
+    <ProjectReference Include="..\..\System.Windows.Compat\System.Windows.Compat.csproj" />
+    <PackageReference Include="System.Drawing.Common" Version="*" ExcludeAssets="all" />
+  </ItemGroup>
   <PropertyGroup />
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
     <Exec Command="if $(ConfigurationName) == Debug (&#xD;&#xA;&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins&quot; (&#xD;&#xA;  echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins&quot;&#xD;&#xA;)&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xD;&#xA;  echo &quot;Creating $(PlatformName) 3.0.0 Plugins folder&quot;&#xD;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xD;&#xA;)&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugin\Phd2 Tools&quot; (&#xD;&#xA;  echo &quot;Creating $(PlatformName) Plugins Phd2 Tools folder&quot;&#xD;&#xA;  mkdir &quot;%25localappdata%25\NINA\Plugins\3.0.0\Phd2 Tools&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;%25localappdata%25\NINA\Plugins\3.0.0\Phd2 Tools\$(TargetFileName)&quot; /Y&#xD;&#xA;&#xD;&#xA;)" IgnoreExitCode="true" />
+  </Target>
+  <Target Name="PostBuildLinux" AfterTargets="PostBuildEvent" Condition="$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
+    <Exec Command="mkdir -p $HOME/.local/share/NINA/Plugins/3.0.0/Phd2\ Tools" />
+    <Exec Command="cp $(TargetPath) $HOME/.local/share/NINA/Plugins/3.0.0/Phd2\ Tools/" />
   </Target>
 </Project>
