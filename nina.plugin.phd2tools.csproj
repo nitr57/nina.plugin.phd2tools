@@ -12,7 +12,7 @@
     <Product>Phd2 Tools</Product>
     <Description>Additional capabilities for controlling the PHD2 Guiding Software via N.I.N.A.</Description>
     <Copyright>Copyright ©  2024-2025</Copyright>
-    <Version>1.0.6.0</Version>
+    <Version>1.0.7.0</Version>
     <DefaultItemExcludes Condition="$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">$(DefaultItemExcludes);**/*.xaml.cs;**/*.xaml</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup Condition="!$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">
