@@ -528,7 +528,7 @@
                         <TextBlock
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
-                            Text="Recovery timeout" />
+                            Text="Recovery timeout (0 = unlimited)" />
                         <ninactrl:UnitTextBox
                             MinWidth="40"
                             Margin="5,0,0,0"
@@ -538,7 +538,7 @@
                         <TextBlock
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
-                            Text="Max retries" />
+                            Text="Max retries (0 = unlimited)" />
                         <TextBox
                             MinWidth="40"
                             Margin="5,0,0,0"
