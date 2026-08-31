@@ -472,6 +472,140 @@
         </nina:SequenceBlockView>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:InterruptAndRetryWhenRMSAbove}">
+        <nina:SequenceBlockView>
+            <nina:SequenceBlockView.SequenceItemContent>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="Mode" />
+                        <ComboBox
+                            Width="75"
+                            Margin="5,0,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            ItemsSource="{Binding Source={util:EnumBindingSource {x:Type local:GuideInterrupteMode}}}"
+                            SelectedItem="{Binding Mode}" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Threshold" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding RmsThreshold}"
+                            Unit="&quot;" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Mode}" Value="{x:Static local:GuideInterrupteMode.RMS}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="Minimum Points" />
+                            <TextBox
+                                MinWidth="40"
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding MinimumPoints}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="Stable for" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding StableTime}"
+                            Unit="s" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Recovery timeout (0 = unlimited)" />
+                        <ninactrl:UnitTextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding RecoveryTimeout}"
+                            Unit="min" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Max retries (0 = unlimited)" />
+                        <TextBox
+                            MinWidth="40"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding MaxRetries}" />
+                    </StackPanel>
+                </StackPanel>
+            </nina:SequenceBlockView.SequenceItemContent>
+            <nina:SequenceBlockView.SequenceItemProgressContent>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding RecoveryStatus}"
+                        Visibility="{Binding IsWaitingForRecovery, Converter={StaticResource VisibilityConverter}}" />
+                    <Grid Visibility="{Binding RmsInstance, Converter={StaticResource NullToVisibilityCollapsedConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Path
+                            Width="20"
+                            Margin="2.5"
+                            Data="{StaticResource PhdTools_Recording}"
+                            Fill="{StaticResource PrimaryBrush}"
+                            Stretch="Uniform" />
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="5,0,0,0"
+                            Orientation="Vertical">
+                            <StackPanel.Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Mode}" Value="{x:Static local:GuideInterrupteMode.Peak}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="{Binding RmsInstance.PeakRAText}" />
+                            <TextBlock Text="{Binding RmsInstance.PeakDecText}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="5,0,0,0"
+                            Orientation="Vertical">
+                            <StackPanel.Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Mode}" Value="{x:Static local:GuideInterrupteMode.RMS}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="{Binding RmsInstance.RAText}" />
+                            <TextBlock Text="{Binding RmsInstance.DecText}" />
+                            <TextBlock Text="{Binding RmsInstance.TotalText}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </nina:SequenceBlockView.SequenceItemProgressContent>
+        </nina:SequenceBlockView>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type local:Phd2SettleInstruction}">
         <nina:SequenceBlockView>
         </nina:SequenceBlockView>

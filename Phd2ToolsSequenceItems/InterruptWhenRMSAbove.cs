@@ -142,43 +142,14 @@ namespace nina.plugin.phd2tools.Phd2ToolsSequenceItems {
             return Task.Run(async () => {
                 while (!token.IsCancellationRequested && this.Parent?.Status == NINA.Core.Enum.SequenceEntityStatus.RUNNING) {
                     try {
-                        if (activeRMSRecording != Guid.Empty && guiderMediator.GetInfo().Connected) {
-                            bool interruptExposure = false;
+                        if (activeRMSRecording != Guid.Empty && guiderMediator.GetInfo().Connected
+                            && RmsThresholdEvaluator.IsAboveThreshold(RmsInstance, Mode, RmsThreshold, MinimumPoints, out var reason)) {
+                            Notification.ShowInformation($"{reason} - Interrupting current exposure");
+                            Logger.Info(reason);
 
-                            if (Mode == GuideInterrupteMode.Peak) {
-                                if (Math.Abs(RmsInstance.PeakRA) * RmsInstance.Scale > RmsThreshold) {
-                                    Notification.ShowInformation($"RA peak above threshold ({Math.Round(RmsInstance.PeakRA * RmsInstance.Scale, 2)} / {RmsThreshold}) - Interrupting current exposure");
-                                    Logger.Info($"RA peak above threshold ({RmsInstance.PeakRA * RmsInstance.Scale} / {RmsThreshold})");
-                                    interruptExposure = true;
-                                }
-                                if (Math.Abs(RmsInstance.PeakDec * RmsInstance.Scale) > RmsThreshold) {
-                                    Notification.ShowInformation($"Dec peak above threshold ({Math.Round(RmsInstance.PeakDec * RmsInstance.Scale, 2)} / {RmsThreshold}) - Interrupting current exposure");
-                                    Logger.Info($"Dec peak above threshold ({RmsInstance.PeakDec * RmsInstance.Scale} / {RmsThreshold})");
-                                    interruptExposure = true;
-                                }
-                            } else if (Mode == GuideInterrupteMode.RMS && RmsInstance.DataPoints > MinimumPoints) {
-                                if (Math.Abs(RmsInstance.Total) * RmsInstance.Scale > RmsThreshold) {
-                                    Notification.ShowInformation($"Total RMS above threshold ({Math.Round(RmsInstance.Total * RmsInstance.Scale, 2)} / {RmsThreshold}) - Interrupting current exposure");
-                                    Logger.Info($"Total RMS above threshold ({RmsInstance.Total * RmsInstance.Scale} / {RmsThreshold})");
-                                    interruptExposure = true;
-                                }
-                                if (Math.Abs(RmsInstance.RA) * RmsInstance.Scale > RmsThreshold) {
-                                    Notification.ShowInformation($"RA RMS above threshold ({Math.Round(RmsInstance.RA * RmsInstance.Scale, 2)} / {RmsThreshold}) - Interrupting current exposure");
-                                    Logger.Info($"RA RMS above threshold ({RmsInstance.RA * RmsInstance.Scale} / {RmsThreshold})");
-                                    interruptExposure = true;
-                                }
-                                if (Math.Abs(RmsInstance.Dec) * RmsInstance.Scale > RmsThreshold) {
-                                    Notification.ShowInformation($"Dec RMS above threshold ({Math.Round(RmsInstance.Dec * RmsInstance.Scale, 2)} / {RmsThreshold}) - Interrupting current exposure");
-                                    Logger.Info($"Dec RMS above threshold ({RmsInstance.Dec * RmsInstance.Scale} / {RmsThreshold})");
-                                    interruptExposure = true;
-                                }
-                            }
-
-                            if (interruptExposure) {
-                                if (exposureItem != null && exposureItem.Status == NINA.Core.Enum.SequenceEntityStatus.RUNNING) {
-                                    Logger.Info("Interrupting running exposure item");
-                                    exposureItem?.Skip();
-                                }
+                            if (exposureItem != null && exposureItem.Status == NINA.Core.Enum.SequenceEntityStatus.RUNNING) {
+                                Logger.Info("Interrupting running exposure item");
+                                exposureItem?.Skip();
                             }
                         }
                         await Task.Delay(1000, token);
